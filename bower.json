@@ -18,6 +18,54 @@
   ],
   "dependencies": {
     "moment": "~2.10.6",
-    "uikit": "~2.23.0"
+    "uikit": "~2.23.0",
+    "jquery.countdown": "~2.1.0"
+  },
+  "install": {
+    "sources": {
+      "jquery": {
+        "mapping": [
+          {
+            "bower_components/jquery/dist/jquery.min.js": "assets/js/vendor/jquery.min.js"
+          },
+          {
+            "bower_components/jquery/dist/jquery.min.map": "assets/js/vendor/jquery.min.map"
+          }
+        ]
+      },
+      "uikit": {
+        "mapping": [
+          {
+            "bower_components/uikit/js/uikit.min.js": "assets/js/vendor/uikit.min.js"
+          },
+          {
+            "bower_components/uikit/fonts/fontawesome-webfont.ttf": "assets/fonts/fontawesome-webfont.ttf"
+          },
+          {
+            "bower_components/uikit/fonts/fontawesome-webfont.woff": "assets/fonts/fontawesome-webfont.woff"
+          },
+          {
+            "bower_components/uikit/fonts/fontawesome-webfont.woff2": "assets/fonts/fontawesome-webfont.woff2"
+          },
+          {
+            "bower_components/uikit/fonts/FontAwesome.otf": "assets/fonts/FontAwesome.otf"
+          }
+        ]
+      },
+      "moment": {
+        "mapping": [
+          {
+            "bower_components/moment/min/moment-with-locales.min.js": "assets/js/vendor/moment-with-locales.min.js"
+          }
+        ]
+      },
+      "jquery.countdown": {
+        "mapping": [
+          {
+            "bower_components/jquery.countdown/dist/jquery.countdown.min.js": "assets/js/vendor/jquery.countdown.min.js"
+          }
+        ]
+      }
+    }
   }
 }

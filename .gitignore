@@ -79,5 +79,9 @@ vendor/
 # Bower
 bower_components/
 
+# NPM
+node_modules/
+
 # Project Files
 resources/scss/
+gulpfile.js
