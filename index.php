@@ -129,11 +129,7 @@
 			var position = new POSITION();
 
 			if (navigator.geolocation) {
-				navigator.geolocation.watchPosition(onSuccess, onError, {
-  					enableHighAccuracy: true,
-  					timeout: 5000,
-  					maximumAge: 0
-				});
+				navigator.geolocation.watchPosition(onSuccess, onError);
 			} else {
 				position.lat = <?= $lat; ?>;
 				position.long = <?= $long; ?>;
@@ -152,7 +148,22 @@
 				getPrayerTimes(position);
 			}
 
-			function onError() {}
+			function onError(error) {
+				switch(error.code) {
+					case error.PERMISSION_DENIED:
+						alert("User denied the request for Geolocation.");
+						break;
+			        case error.POSITION_UNAVAILABLE:
+			            alert("Location information is unavailable.");
+			            break;
+			        case error.TIMEOUT:
+			            alert("The request to get user location timed out.");
+			            break;
+			        case error.UNKNOWN_ERROR:
+			            alert("An unknown error occurred.");
+			            break;
+			    }
+			}
 
 			function getPrayerTimes(position) {
 				var day				= moment().date();
@@ -195,16 +206,17 @@
 						$('#isha-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Isha).fromNow());
 
 						var next_azan;
-
 						for (var i in times) {
 							if (moment(year + '-' + month + '-' + day + ' ' + times[i]).hours() > moment().hours()) {
 								next_azan = times[i];
 							}
 						}
 
-						$('#pt-next-prayer-time-countdown').countdown(year + '-' + month + '-' + day + ' ' + next_azan, function(event) {
-							$(this).html(event.strftime('%H:%M:%S'));
-						});
+						if (next_azan !== undefined) {
+							$('#pt-next-prayer-time-countdown').countdown(year + '-' + month + '-' + day + ' ' + next_azan, function(event) {
+								$(this).html(event.strftime('%H:%M:%S'));
+							});
+						}
 
 					} else {
 						alert(response.error);
