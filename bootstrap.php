@@ -1,12 +1,14 @@
 <?php
+	require_once 'vendor/autoload.php';
 	require_once 'helpers/functions.php';
 
-	$ipinfo = json_decode(file_get_contents('http://ipinfo.io'));
+	use GeoIp2\Database\Reader;
 
-	$lat = null;
-	$long = null;
+	$reader = new Reader(__DIR__ . '/resources/db/GeoLite2-City.mmdb');
 
-	if ($ipinfo) {
-		$lat = explode(',', $ipinfo->loc)[0];
-		$long = explode(',', $ipinfo->loc)[1];
-	}
+	$ip = ($_SERVER['REMOTE_ADDR'] === '127.0.0.1') ? '69.70.139.242' : $_SERVER['REMOTE_ADDR'];
+
+	$record = $reader->city($ip);
+
+	$lat = $record->location->latitude;
+	$long = $record->location->longitude;

@@ -59,7 +59,7 @@
 				<label id="imsaak-ago" class="pt-time-ago"></label>
 			</div>
 			<div>
-				<h2 class="pt-label">Farj</h2>
+				<h2 class="pt-label">Fajr</h2>
 				<label id="fajr-time" class="pt-time"></label>
 				<label id="fajr-ago" class="pt-time-ago"></label>
 			</div>
@@ -94,7 +94,11 @@
 				<label id="isha-ago" class="pt-time-ago"></label>
 			</div>
 		</section>
+		<h2 class="section-title"><?= __('Quibla Location'); ?></h2>
 	</main>
+	<div class="map-container">
+		<div id="map" class="map"></div>
+	</div>
 
 
 	<nav id="pt-navigation" class="uk-offcanvas pt-navigation">
@@ -116,14 +120,21 @@
 	<script type="text/javascript" src="assets/js/vendor/uikit.min.js"></script>
 	<script type="text/javascript" src="assets/js/vendor/moment-with-locales.min.js"></script>
 	<script type="text/javascript" src="assets/js/vendor/jquery.countdown.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBaLyEkytQwTuclOBSXWcS2EhDqje7BZY8&signed_in=true" type="text/javascript"></script>
 	<script type="text/javascript">
 
 		$(function() {
 			'use strict';
 
+			var gmaps_api_key = 'AIzaSyBaLyEkytQwTuclOBSXWcS2EhDqje7BZY8';
+			var map_style = [{"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]},{"featureType":"administrative.country","elementType":"all","stylers":[{"color":"#ebbe18"}]},{"featureType":"administrative.country","elementType":"geometry.stroke","stylers":[{"color":"#f3c723"},{"visibility":"on"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}];
 			var POSITION = function() {
-				this.lat = 0;
-				this.long = 0;
+				this.lat = <?= $lat; ?>;
+				this.long = <?= $long; ?>;
+				this.kaaba = {
+					lat: 21.423216,
+					long: 39.826062
+				};
 			};
 
 			var position = new POSITION();
@@ -131,9 +142,6 @@
 			if (navigator.geolocation) {
 				navigator.geolocation.watchPosition(onSuccess, onError);
 			} else {
-				position.lat = <?= $lat; ?>;
-				position.long = <?= $long; ?>;
-
 				getPrayerTimes(position);
 			}
 
@@ -163,6 +171,8 @@
 			            alert("An unknown error occurred.");
 			            break;
 			    }
+
+			    getPrayerTimes(position);
 			}
 
 			function getPrayerTimes(position) {
@@ -196,25 +206,30 @@
 						$('#maghrib-time').html(times.Maghrib);
 						$('#isha-time').html(times.Isha);
 
-						$('#imsaak-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Imsaak).fromNow());
-						$('#fajr-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Fajr).fromNow());
-						$('#sunrise-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Sunrise).fromNow());
-						$('#dhuhr-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Dhuhr).fromNow());
-						$('#asr-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Asr).fromNow());
-						$('#sunset-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Sunset).fromNow());
-						$('#maghrib-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Maghrib).fromNow());
-						$('#isha-ago').html(moment(year + '-' + month + '-' + day + ' ' + times.Isha).fromNow());
+						$('#imsaak-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Imsaak, 'YYYY MM DD H:i:s').fromNow());
+						$('#fajr-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Fajr, 'YYYY MM DD H:i:s').fromNow());
+						$('#sunrise-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Sunrise, 'YYYY MM DD H:i:s').fromNow());
+						$('#dhuhr-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Dhuhr, 'YYYY MM DD H:i:s').fromNow());
+						$('#asr-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Asr, 'YYYY MM DD H:i:s').fromNow());
+						$('#sunset-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Sunset, 'YYYY MM DD H:i:s').fromNow());
+						$('#maghrib-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Maghrib, 'YYYY MM DD H:i:s').fromNow());
+						$('#isha-ago').html(moment(year + ' ' + month + ' ' + day + ' ' + times.Isha, 'YYYY MM DD H:i:s').fromNow());
 
 						var next_azan;
+						times.Imsaak = 0;
+						times.Sunrise = 0;
+						times.Sunset = 0;
 						for (var i in times) {
-							if (moment(year + '-' + month + '-' + day + ' ' + times[i]).hours() > moment().hours()) {
+							if (moment(year + ' ' + month + ' ' + day + ' ' + times[i], 'YYYY MM DD H:i:s').hours() > moment().hours()) {
 								next_azan = times[i];
+								break;
 							}
 						}
 
 						if (next_azan !== undefined) {
 							$('#pt-next-prayer-time-countdown').countdown(year + '-' + month + '-' + day + ' ' + next_azan, function(event) {
 								$(this).html(event.strftime('%H:%M:%S'));
+								window.document.title = event.strftime('%H:%M:%S') + ' - Chi\'a Pray Times';
 							});
 						}
 
@@ -223,6 +238,31 @@
 					}
 				});
 			}
+
+			var map;
+			function initMap() {
+				map = new google.maps.Map(document.getElementById('map'), {
+					center: { lat: position.lat, lng: position.long },
+					zoom: 12,
+					styles: map_style
+				});
+			}
+
+			initMap();
+
+			var kaabaPath = new google.maps.Polyline({
+				path: [{ lat: position.lat, lng: position.long }, { lat: position.kaaba.lat, lng: position.kaaba.long }],
+				geodesic: false,
+				strokeColor: '#FBBF00',
+				strokeOpacity: 1.0,
+				strokeWeight: 2
+			});
+
+			kaabaPath.setMap(map);
+			var center = map.getCenter();
+			google.maps.event.addDomListener(window, 'resize', function() {
+				map.setCenter(center);
+			});
 		});
 	</script>
 </body>
